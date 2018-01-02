@@ -1,17 +1,15 @@
 package xyz.javista.androidpad;
 
 import android.bluetooth.BluetoothSocket;
-import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 public class BluetoothService {
     private static final String TAG = "MY_APP_DEBUG_TAG";
-    private static final int CHUNK_SIZE = 200;
-    private Handler mHandler;
 
     public BluetoothService(BluetoothSocket socket) {
         Thread t = new Thread(new ConnectedThread(socket));
@@ -42,7 +40,7 @@ public class BluetoothService {
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
 
-            write("Connected with android".getBytes());
+            write("Connected with android");
         }
 
         @Override
@@ -54,6 +52,7 @@ public class BluetoothService {
                     for (int i = 0; i < size; i++) {
                         message.append((char) mmBuffer[i]);
                     }
+                    write(message.toString());
                     Log.d(TAG, message.toString());
 
                 } catch (IOException e) {
@@ -63,9 +62,11 @@ public class BluetoothService {
             }
         }
 
-        public void write(byte[] data) {
+        public void write(String data) {
             try {
-                mmOutStream.write(data);
+                OutputStreamWriter os = new OutputStreamWriter(mmOutStream);
+                os.write(data);
+                os.flush();
             } catch (IOException e) {
                 Log.e(TAG, "Error occurred when sending data", e);
             }

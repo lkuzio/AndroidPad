@@ -9,14 +9,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,6 +106,7 @@ public class FullscreenActivity extends AppCompatActivity {
     private View devicesLayout;
     private View controlPanel;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,24 +116,12 @@ public class FullscreenActivity extends AppCompatActivity {
         controlPanel = findViewById(R.id.control_panel);
         controlPanel.setVisibility(View.INVISIBLE);
         listView = (ListView) findViewById(R.id.dev_list);
-        if(listView!=null) {
+        if (listView != null) {
             adapter = new ArrayAdapter<String>(this,
                     android.R.layout.simple_list_item_1,
                     devicesNames);
             listView.setAdapter(adapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    String selected = (String) listView.getItemAtPosition(position);
-                    BluetoothDevice device = devices.get(selected);
-                    devicesLayout.setVisibility(View.INVISIBLE);
-                    controlPanel.setVisibility(View.VISIBLE);
-                    TextView deviceLabel = (TextView) findViewById(R.id.device_name);
-                    deviceLabel.setText(selected);
-                    Thread connectThread =  new Thread(new ConnectThread(device, mBluetoothAdapter));
-                    connectThread.start();
-                }
-            });
+            listView.setOnItemClickListener(new DeviceListItemClickHandler(this).invoke());
         }
 
         mVisible = true;
@@ -138,8 +129,8 @@ public class FullscreenActivity extends AppCompatActivity {
         // Set up the user interaction to manually show or hide the system UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
-        boolean permissionCheck = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)== PackageManager.PERMISSION_GRANTED;
-        if(permissionCheck) {
+        boolean permissionCheck = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        if (permissionCheck) {
             // {Some Code}
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 200);
@@ -148,31 +139,28 @@ public class FullscreenActivity extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device doesn't support Bluetooth
-        }
-        if (!mBluetoothAdapter.isEnabled()) {
+        } else if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            int REQUEST_ENABLE_BT=1;
+            int REQUEST_ENABLE_BT = 1;
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 
-        boolean started = mBluetoothAdapter.startDiscovery();
+        mBluetoothAdapter.startDiscovery();
         registerReceiver(mReceiver, filter);
 
         final Button button = (Button) findViewById(R.id.dummy_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                boolean started = mBluetoothAdapter.startDiscovery();
+                mBluetoothAdapter.startDiscovery();
             }
         });
-        }
+    }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Discovery has found a device. Get the BluetoothDevice
-                // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
                 devicesNames.add(deviceName);
@@ -192,13 +180,6 @@ public class FullscreenActivity extends AppCompatActivity {
         delayedHide(100);
     }
 
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
-    }
 
     private void hide() {
         // Hide UI first
@@ -239,5 +220,21 @@ public class FullscreenActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(mReceiver);
 
+    }
+
+    public HashMap<String, BluetoothDevice> getDevices() {
+        return devices;
+    }
+
+    public View getDevicesLayout() {
+        return devicesLayout;
+    }
+
+    public View getControlPanel() {
+        return controlPanel;
+    }
+
+    public BluetoothAdapter getmBluetoothAdapter() {
+        return mBluetoothAdapter;
     }
 }

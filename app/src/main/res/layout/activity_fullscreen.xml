@@ -16,18 +16,71 @@
             android:layout_height="match_parent" android:id="@+id/control_panel" android:visibility="invisible">
 
         <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:id="@+id/control">
-            <TextView
-                    android:text="TextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/device_name" android:layout_weight="1"/>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <TextView
+                        android:text="TextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/device_name" android:layout_weight="1"
+                        tools:layout_editor_absoluteY="16dp" tools:layout_editor_absoluteX="16dp"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:layout_weight="1">
+                    <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" android:layout_weight="1">
+                        <Button
+                                android:text="Lewo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" android:id="@+id/left"
+                                tools:layout_editor_absoluteY="311dp" tools:layout_editor_absoluteX="280dp"
+                                android:layout_weight="1"/>
+                        <Button
+                                android:text="Prawo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" android:id="@+id/right"
+                                tools:layout_editor_absoluteY="359dp" tools:layout_editor_absoluteX="280dp"
+                                android:layout_weight="1"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:layout_weight="1">
+                    <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                        <Button
+                                android:text="Przód"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:id="@+id/forward"
+                                android:layout_weight="1"/>
+                        <Button
+                                android:text="Tył"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:id="@+id/backward"
+                                android:layout_weight="1"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
     <FrameLayout android:layout_width="match_parent"
                  android:layout_height="match_parent"
-                 android:fitsSystemWindows="true" android:id="@+id/devices_layout">
+                 android:fitsSystemWindows="true" android:id="@+id/devices_layout" android:visibility="visible">
 
         <LinearLayout
                 android:orientation="horizontal"

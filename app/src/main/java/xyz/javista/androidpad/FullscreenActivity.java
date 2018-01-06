@@ -16,13 +16,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -105,6 +104,7 @@ public class FullscreenActivity extends AppCompatActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private View devicesLayout;
     private View controlPanel;
+    private AdapterView.OnItemClickListener itemClickListener;
 
 
     @Override
@@ -116,12 +116,18 @@ public class FullscreenActivity extends AppCompatActivity {
         controlPanel = findViewById(R.id.control_panel);
         controlPanel.setVisibility(View.INVISIBLE);
         listView = (ListView) findViewById(R.id.dev_list);
+        Button left = (Button) findViewById(R.id.left);
+        Button right = (Button) findViewById(R.id.right);
+        Button forward = (Button) findViewById(R.id.forward);
+        Button backward = (Button) findViewById(R.id.backward);
+        List<Button> buttons = Arrays.asList(left, right, forward, backward);
         if (listView != null) {
             adapter = new ArrayAdapter<String>(this,
                     android.R.layout.simple_list_item_1,
                     devicesNames);
             listView.setAdapter(adapter);
-            listView.setOnItemClickListener(new DeviceListItemClickHandler(this).invoke());
+            itemClickListener = new DeviceListItemClickHandler(this, buttons).invoke();
+            listView.setOnItemClickListener(itemClickListener);
         }
 
         mVisible = true;

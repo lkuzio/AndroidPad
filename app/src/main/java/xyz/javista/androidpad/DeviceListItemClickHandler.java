@@ -3,13 +3,18 @@ package xyz.javista.androidpad;
 import android.bluetooth.BluetoothDevice;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class DeviceListItemClickHandler {
+    private final List<Button> buttons;
     private FullscreenActivity fullscreenActivity;
 
-    public DeviceListItemClickHandler(FullscreenActivity fullscreenActivity) {
+    public DeviceListItemClickHandler(FullscreenActivity fullscreenActivity, List<Button> buttons) {
         this.fullscreenActivity = fullscreenActivity;
+        this.buttons = buttons;
     }
 
     public AdapterView.OnItemClickListener invoke() {
@@ -22,7 +27,7 @@ public class DeviceListItemClickHandler {
                 fullscreenActivity.getControlPanel().setVisibility(View.VISIBLE);
                 TextView deviceLabel = (TextView) fullscreenActivity.findViewById(R.id.device_name);
                 deviceLabel.setText(selected);
-                Thread connectThread = new Thread(new ConnectThread(device, fullscreenActivity.getmBluetoothAdapter()));
+                Thread connectThread = new Thread(new ConnectThread(device, fullscreenActivity.getmBluetoothAdapter(), buttons));
                 connectThread.start();
             }
         };
